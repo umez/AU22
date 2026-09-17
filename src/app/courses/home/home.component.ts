@@ -8,6 +8,8 @@ import {map, shareReplay} from 'rxjs/operators';
 import {CoursesHttpService} from '../services/courses-http.service';
 import { MatModules } from '../../mat.modules';
 import { AsyncPipe } from '@angular/common';
+import { CourseComponent } from '../course/course.component';
+import { CoursesCardListComponent } from '../courses-card-list/courses-card-list.component';
 
 
 
@@ -15,7 +17,7 @@ import { AsyncPipe } from '@angular/common';
     selector: 'home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
-    imports: [MatModules, AsyncPipe]
+    imports: [MatModules, AsyncPipe, CourseComponent, CoursesCardListComponent]
 })
 export class HomeComponent implements OnInit {
 
