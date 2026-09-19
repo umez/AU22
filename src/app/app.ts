@@ -1,10 +1,11 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {select, Store} from "@ngrx/store";
 import {Observable} from "rxjs";
 import {map} from 'rxjs/operators';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink, RouterOutlet} from '@angular/router';
 import { MatModules } from './mat.modules';
 import { AsyncPipe } from '@angular/common';
+import { AuthStore } from './auth/store/auth.store';
 
 @Component({
   imports: [RouterOutlet, ...MatModules, RouterLink],
@@ -13,6 +14,9 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './app.html',
 })
 export class App {
+
+
+  authStore = inject(AuthStore);
  loading = true;
 
     constructor(private router: Router) {
@@ -43,6 +47,6 @@ export class App {
     }
 
     logout() {
-
+      this.authStore.logout()
     }
 }

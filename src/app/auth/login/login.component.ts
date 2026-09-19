@@ -1,45 +1,50 @@
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, inject, effect } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 
-import {Store} from "@ngrx/store";
+import { Store } from "@ngrx/store";
 
-import {AuthService} from "../auth.service";
-import {tap} from "rxjs/operators";
-import {noop} from "rxjs";
-import {Router} from "@angular/router";
+import { AuthService } from "../auth.service";
+import { tap } from "rxjs/operators";
+import { noop } from "rxjs";
+import { Router } from "@angular/router";
 import { MatModules } from '../../mat.modules';
+import { AuthStore } from '../store/auth.store';
 
 @Component({
-    selector: 'login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [MatModules, ReactiveFormsModule]
+  selector: 'login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  imports: [MatModules, ReactiveFormsModule]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
   form: FormGroup;
+  _fb = inject(FormBuilder);
+  _auth = inject(AuthService);
+  _router = inject(Router);
 
-  constructor(
-      private fb:FormBuilder,
-      private auth: AuthService,
-      private router:Router) {
+  readonly store = inject(AuthStore);
 
-      this.form = fb.group({
-          email: ['test@angular-university.io', [Validators.required]],
-          password: ['test', [Validators.required]]
-      });
+  constructor() {
+
+    this.form = this._fb.group({
+      email: ['test@angular-university.io', [Validators.required]],
+      password: ['test', [Validators.required]]
+    });
+
+    effect(() => {
+      console.log(this.store)
+    })
 
   }
 
-  ngOnInit() {
 
-  }
-
-  login() {
-
+  async login() {
+    const {email, password} = this.form.value;
+    await this.store.login(email, password);
+    this._router.navigateByUrl('courses')
   }
 
 }
