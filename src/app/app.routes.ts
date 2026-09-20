@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { courseResolver } from './courses/services/courses.resolver';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,9 @@ export const routes: Routes = [
   },
   {
     path: 'courses',
+    resolve: {
+      courses: courseResolver
+    },
     loadChildren: () => import('./courses/courses.routes').then(m => m.coursesRoutes)
   },
   {

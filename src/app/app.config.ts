@@ -6,7 +6,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { AuthEffects } from './auth/effects/auth.effects';
+import { provideEntityData, withEffects } from '@ngrx/data';
 import { authReducer } from './auth/reducer';
+import { entityConfig } from './courses/course.entitydata';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +19,8 @@ export const appConfig: ApplicationConfig = {
       'Auth' :  authReducer
     }),
     provideEffects([AuthEffects]),
+    provideEntityData(entityConfig, withEffects()),
+
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
