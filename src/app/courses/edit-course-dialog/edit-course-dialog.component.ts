@@ -1,4 +1,4 @@
-import {Component, Inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Inject, ChangeDetectionStrategy, inject, effect} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Course} from '../model/course';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import {CoursesHttpService} from '../services/courses-http.service';
 import { MatModules } from '../../mat.modules';
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { CoursesStore } from '../store/courses.store';
 
 @Component({
     selector: 'course-dialog',
@@ -24,6 +25,10 @@ export class EditCourseDialogComponent {
   mode: 'create' | 'update';
 
   loading$!:Observable<boolean>;
+
+  store = inject(CoursesStore);
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -53,23 +58,31 @@ export class EditCourseDialogComponent {
         iconUrl: ['', Validators.required]
       });
     }
+
+    effect(() => {
+      if(this.store.isLoading() === false ) {
+        this.dialogRef.close()
+      }
+    })
   }
 
   onClose() {
     this.dialogRef.close();
   }
 
-  onSave() {
+  async onSave() {
 
     const course: Course = {
       ...this.course,
       ...this.form.value
     };
 
-    this.coursesService.saveCourse(course.id, course)
-      .subscribe(
-        () => this.dialogRef.close()
-      )
+    await this.store.editCourse({courseId: course.id, changes: course})
+    // this.dialogRef.close()
+    // this.coursesService.saveCourse(course.id, course)
+    //   .subscribe(
+    //     () => this.dialogRef.close()
+    //   )
 
 
   }

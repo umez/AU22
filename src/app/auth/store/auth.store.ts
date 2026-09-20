@@ -1,17 +1,26 @@
 import { withDevtools } from '@ngrx-toolkit/core';
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
 import { initialAuthSlice } from "./auth.slice";
 import { AuthService } from "../auth.service";
 import { User } from "../../auth/model/user.model";
-import { inject } from "@angular/core";
-import { firstValueFrom } from 'rxjs';
+import { computed, inject } from "@angular/core";
+import { firstValueFrom, pipe, switchMap, tap } from 'rxjs';
 import { withLocalStorage } from '../../custom-features/with-local-storage.feature';
+import { Router } from '@angular/router';
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { tapResponse } from "@ngrx/operators";
 
 export const AuthStore = signalStore(
   {providedIn: 'root'},
   withState(initialAuthSlice),
-  withMethods((store) => {
-    const authService = inject(AuthService);
+  withProps(() => ({
+    _router : inject(Router)
+  })),
+  withComputed(({ user }) => ({
+    isLoggedIn: computed(() => user() !== null)
+  })),
+  withMethods((store, authService = inject(AuthService)) => {
+
 
     return {
       // loadUser: async () => {
@@ -22,17 +31,30 @@ export const AuthStore = signalStore(
       //   }
       // },
 
-      login: async (email: string, password: string) => {
-        const user = await firstValueFrom(authService.login(email, password))
-        if (user) {
-          // localStorage.setItem('user', JSON.stringify(user));
-          patchState(store, {user});
-        }
-      },
-
-      logout: async () => {
-        patchState(store, {user: null});
-      }
+      login: rxMethod<{email: string, password: string}> (
+        pipe(
+          switchMap(({email, password}) => {
+            console.log(email, password)
+            return authService.login(email, password).pipe(
+              tapResponse({
+                next: user => {
+                  patchState(store, {user})
+                   store._router.navigateByUrl('courses')
+                },
+                error: error => console.error('Login failed', error)
+              })
+            )
+          })
+        ),
+      ),
+      logout: rxMethod<void>(
+        pipe(
+          tap(() => {
+            patchState(store, {user: null});
+            store._router.navigateByUrl('/login')
+          })
+        )
+      )
     }
   }),
   withLocalStorage('user'),

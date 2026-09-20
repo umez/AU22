@@ -41,10 +41,9 @@ export class LoginComponent {
   }
 
 
-  async login() {
+  login() {
     const {email, password} = this.form.value;
-    await this.store.login(email, password);
-    this._router.navigateByUrl('courses')
+    this.store.login({email, password});
   }
 
 }

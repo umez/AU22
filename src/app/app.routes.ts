@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
+import { CoursesStore } from './courses/store/courses.store';
 
 export const routes: Routes = [
   {
@@ -12,6 +14,8 @@ export const routes: Routes = [
   },
   {
     path: 'courses',
+    canActivate: [authGuard],
+    providers: [CoursesStore],
     loadChildren: () => import('./courses/courses.routes').then(m => m.coursesRoutes)
   },
   {

@@ -4,7 +4,7 @@
 <mat-dialog-content>
 
   @if (form) {
-    @if (loading$ | async) {
+    @if (store.isLoading() === true) {
       <div class="spinner-container">
         <mat-spinner></mat-spinner>
       </div>

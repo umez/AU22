@@ -8,6 +8,7 @@ import {loginUser} from "./auth.route";
 import {saveCourse} from "./save-course.route";
 import {createCourse} from './create-course.route';
 import {deleteCourse} from './delete-course.route';
+import { DELAY_MS } from './config';
 
 const bodyParser = require('body-parser');
 
@@ -21,6 +22,9 @@ app.use(cors({origin: true}));
 
 app.use(bodyParser.json());
 
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    setTimeout(next, DELAY_MS);
+});
 
 app.route('/api/login').post(loginUser);
 
