@@ -3,34 +3,30 @@ import { User } from "../model/user.model";
 import { AuthActions } from "../actions/auth.actions";
 
 export interface AuthState {
-  user: User | null,
-  isBusy: boolean
+  user: User | null
 }
 
-const initialAuthState : AuthState = {user: null, isBusy : false}
+const initialAuthState : AuthState = {user: null}
 
 export const authReducer = createReducer(
   initialAuthState,
 
   on(AuthActions.login, state => ({
-    ...state, isBusy: true
+    ...state
   })),
 
   on(AuthActions.loginSuccess, (state, { user }) => ({
     ...state,
-    user,
-    isBusy: false
+    user
   })),
 
   on(AuthActions.loginFailure,  state => ({
-    ...state,
-    isBusy: false
+    ...state
   })),
 
   on(AuthActions.logout, state => ({
     ...state,
-    user: null,
-    isBusy: false
+    user: null
   }))
 
 )
