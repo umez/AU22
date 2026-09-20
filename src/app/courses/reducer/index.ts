@@ -33,7 +33,14 @@ export const coursesReducer = createReducer(
       allCoursesLoaded: true
     })
 
+  ),
+
+  on(
+    CoursesActions.updateCourse,
+    (state, action) => adapter.updateOne(action.update, state)
+
   )
 )
+
 
 export const {selectAll} = adapter.getSelectors(); // this is utils to get the data from entitie object easily
